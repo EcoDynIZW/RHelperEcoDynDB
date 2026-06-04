@@ -227,4 +227,6 @@ createProjPeople = function(proj_name){
    }
  }  
   
+  }
 }
+

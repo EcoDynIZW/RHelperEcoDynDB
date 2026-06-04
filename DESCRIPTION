@@ -9,3 +9,4 @@ Depends: R (>= 4.1)
 Imports: DBI, RPostgres, XML, getPass, readxl
 RoxygenNote: 7.3.3
 Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
