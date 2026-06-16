@@ -2,6 +2,8 @@
 #' 
 #' createProjPeople 
 #' 
+#' @param proj_name name of project in database
+#' 
 #' Function to add people to the EcoDyn database that participate in projects.
 #' 
 #' @export
