@@ -19,7 +19,7 @@ createProjPeople = function(){
   }
   
   if(exists("proj_id") == T){
-    type <- "new project"
+    type <<- "new project"
   } 
   
   # check for database connection and connect if needed
@@ -31,7 +31,9 @@ createProjPeople = function(){
     db_con <- get("db_con", envir = .GlobalEnv)
   }
   
+  add_person_token <- 1
   
+  while(add_person_token == 1){
   add_person = function(){
     # query existing people from the DB
     people = DBI::dbReadTable(db_con, DBI::Id(schema = "people", table = "people"))
@@ -126,7 +128,7 @@ createProjPeople = function(){
       message(paste0("\nThe affiliation '", org, " ", year_of_aff, "' for '", person," already exists in the database."))
     }
     message("\nDoes the person have an additional affiliation relevant for this project?")
-    sec_aff <- utils::select.list(c("NO", "YES"), title = "Please chose by typing '1' or '2' and press 'Enter':", graphics=F)
+    sec_aff <<- utils::select.list(c("NO", "YES"), title = "Please chose by typing '1' or '2' and press 'Enter':", graphics=F)
   }
   # run function add_aff() to add an affiliation of a person
   add_aff()
@@ -209,7 +211,7 @@ createProjPeople = function(){
     message("\nDo you want to add another person to the same projects?")
   }
   
-  sec_person <- utils::select.list(c("NO", "YES"), title = "Please chose by typing '1' or '2' and press 'Enter':", graphics=F) 
+  sec_person <<- utils::select.list(c("NO", "YES"), title = "Please chose by typing '1' or '2' and press 'Enter':", graphics=F) 
  }
  
  # run the select_person() function
@@ -223,10 +225,11 @@ createProjPeople = function(){
    # final message
    message(paste0("\nYou entered all relevant persons to the project '", proj_name, "'.\nYou can always add additional people, by running the createProjPeople() function."))
    if(type == "new project"){
+     rm(add_person_token)
      rm(list = ls())
    }
  }  
   
   }
 }
-
+}
