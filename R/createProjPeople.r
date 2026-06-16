@@ -2,13 +2,11 @@
 #' 
 #' createProjPeople 
 #' 
-#' @param proj_name name of project in database
-#' 
 #' Function to add people to the EcoDyn database that participate in projects.
 #' 
 #' @export
 
-createProjPeople = function(proj_name){
+createProjPeople = function(){
   
   if(exists("proj_id") == F){
     message("Welcome, you want to link or enter persons to one or more existing projects.\nStep 1: Select project(s):")
@@ -21,7 +19,7 @@ createProjPeople = function(proj_name){
   }
   
   if(exists("proj_id") == T){
-    type <<- "new project"
+    type <- "new project"
   } 
   
   # check for database connection and connect if needed
@@ -128,7 +126,7 @@ createProjPeople = function(proj_name){
       message(paste0("\nThe affiliation '", org, " ", year_of_aff, "' for '", person," already exists in the database."))
     }
     message("\nDoes the person have an additional affiliation relevant for this project?")
-    sec_aff <<- utils::select.list(c("NO", "YES"), title = "Please chose by typing '1' or '2' and press 'Enter':", graphics=F)
+    sec_aff <- utils::select.list(c("NO", "YES"), title = "Please chose by typing '1' or '2' and press 'Enter':", graphics=F)
   }
   # run function add_aff() to add an affiliation of a person
   add_aff()
@@ -211,7 +209,7 @@ createProjPeople = function(proj_name){
     message("\nDo you want to add another person to the same projects?")
   }
   
-  sec_person <<- utils::select.list(c("NO", "YES"), title = "Please chose by typing '1' or '2' and press 'Enter':", graphics=F) 
+  sec_person <- utils::select.list(c("NO", "YES"), title = "Please chose by typing '1' or '2' and press 'Enter':", graphics=F) 
  }
  
  # run the select_person() function

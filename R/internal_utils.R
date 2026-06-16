@@ -291,9 +291,9 @@
       
       matches <- regexec("^(.*)\\s+(\\d{4})\\s+(\\d+)$", project)
       parts <- regmatches(project, matches)
-      proj_name  <<- trimws(sapply(parts, `[`, 2))
-      proj_year  <<- as.numeric(sapply(parts, `[`, 3))
-      proj_id <<- as.numeric(sapply(parts, `[`, 4))
+      proj_name  <- trimws(sapply(parts, `[`, 2))
+      proj_year  <- as.numeric(sapply(parts, `[`, 3))
+      proj_id <- as.numeric(sapply(parts, `[`, 4))
     }
     
   }# end of filter()
