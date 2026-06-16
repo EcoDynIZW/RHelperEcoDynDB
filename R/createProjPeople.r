@@ -31,10 +31,6 @@ createProjPeople = function(){
     db_con <- get("db_con", envir = .GlobalEnv)
   }
   
-  add_person_token <- 1
-  
-  while(add_person_token == 1){
-  add_person = function(){
     # query existing people from the DB
     people = DBI::dbReadTable(db_con, DBI::Id(schema = "people", table = "people"))
     if(type == "new project"){
@@ -225,11 +221,9 @@ createProjPeople = function(){
    # final message
    message(paste0("\nYou entered all relevant persons to the project '", proj_name, "'.\nYou can always add additional people, by running the createProjPeople() function."))
    if(type == "new project"){
-     rm(add_person_token)
      rm(list = ls())
    }
  }  
   
   }
-}
-}
+
