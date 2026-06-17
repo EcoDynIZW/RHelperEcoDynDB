@@ -310,7 +310,7 @@ createPoints <- function(in_file = NA, ct_table=NA){
                                    )
      p_name_ids$proj_id = proj_id
       
-     DBI::dbWriteTable(db_con, DBI::Id(schema="projects", table="proj_sites"), p_name_ids, append = T)
+     DBI::dbWriteTable(db_con, DBI::Id(schema="projects", table="proj_points"), p_name_ids, append = T)
      }
 }
   
