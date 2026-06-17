@@ -226,5 +226,5 @@ createProjPeople = function(proj_name){
      rm(list = ls())
    }
  }  
-  
+} 
 }
