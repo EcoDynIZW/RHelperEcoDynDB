@@ -143,7 +143,7 @@ createProjPeople = function(proj_name){
   # person's role in the project----
   if(type == "new project"){
     writeLines("\nStep 3.3: Person's role")} else {
-      writeLines("\nStep 2.3: Person's role")
+      message("\nStep 2.3: Person's role")
     }
   add_role = function(){
     # query existing roles from the database
@@ -225,6 +225,5 @@ createProjPeople = function(proj_name){
    if(type == "new project"){
      rm(list = ls())
    }
- }  
-  
-}
+ } 
+  }}

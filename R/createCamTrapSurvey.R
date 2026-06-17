@@ -1,6 +1,6 @@
 #' import camera trapping data in the EcoDyn database
 #' 
-#' createCamTrapData 
+#' createCamTrapSurvey 
 #' 
 #' Function to import camera trapping data, including station sites, run times and link them to a project of the EcoDyn database.
 #' 
@@ -13,8 +13,9 @@ createCamTrapSurvey = function(proj_name){
   if((exists("proj_name", envir = .GlobalEnv) == T) & (exists("proj_id", envir = .GlobalEnv) == T)){
     proj_name <- get0("proj_name", envir = .GlobalEnv)
     proj_id <- get0("proj_id", envir = .GlobalEnv)
+    message("\nYou want to add a camera trapping survey to the new project.")
   } else {
-    writeLines("\nWelcome, you want to add a camera trapping survey, import it's camera trapping data and link it to existing projects of the EcoDyn database.\nStep 1: Select projects:")
+    message("\nWelcome, you want to add a camera trapping survey and link it to one or more existing EcoDynDB projects.\nAt first you will have to select the projects:")
     RHelperEcoDynDB:::.selectProject()
     if(length(proj_id) > 1){
       warning(paste0("\nYou selected more than one project!\nThe data will be linked to both of your ", length(proj_id), " selected projects.\nDo you want to continue?"), immediate. = T)
@@ -33,45 +34,100 @@ createCamTrapSurvey = function(proj_name){
   }
   
   # step 2, creating camtrap survey in DB ----
-  
   # study areas ----
-  message("\nSeletc study areas used for this survey.\nYou can filter for certain areas using parts or first letter of their name.\nWhen using multiple filters, separate them by comma, e.g. 'forest,national,park'.")
-  areas_db = DBI::dbReadTable(db_con, DBI::Id(schema = "geodata", table = "study_area"))
-  a_filter = readline("Enter filter to restrict area search: ")
-  a_filter = gsub(", | ,", ",", a_filter)
-  pattern = paste(trimws(strsplit(a_filter, ",")[[1]]), collapse = "|")
-  areas = utils::select.list(c(areas_db$study_area[grepl(tolower(pattern), tolower(areas_db$study_area))], "Other"), multiple = TRUE, title = "Select study area", graphics=F)
-  if("Other" %in% areas){
-    message("You chose 'other' and want to enter one or more new study areas.\nWhen entering more than one area, separate them by ';' (e.g. 'area1;area2').")
-    new_area = readline("Enter new study areas: ")
-    while(new_area == ""){
-      warning("\nYou did not enter a new study area. Please do so or deselect 'other'", immediate. = T)
-      continue = utils::select.list(c("Enter new study area", "Deselect 'other'"), title = "Please chose wisely:", graphics=F)
-      if(continue == "Enter new study area"){
-        new_area = readline("Enter name of new stud area: ")
-      } else {
-        new_area = "nothing new"
+  add_area = function(){
+    # query available countries
+    countries <<- DBI::dbGetQuery(db_con, "SELECT country_name_short, country_code_alpha3 FROM geodata.countries ORDER BY country_name_short")
+    
+    message("\nYou chose 'other' and want to enter one or more new study areas.\nWhen entering more than one area, separate them by ';' (e.g. 'area1;area2').")
+    
+    new_area <<- readline("Enter new study areas: ")
+    
+    # if noting was entered
+    while(new_area %in% c("", " ")){
+      warning("\nYou did not enter a new study areas. Please do so or deselect 'other'", immediate. = T)
+      continue = utils::select.list(c("Enter new study areas", "Deselect 'other'", "Exit"), graphics=F)
+      if(continue == "Exit"){
+        message("You decided to leave... Have a nice day!")
+        return(invisible(NULL))
+      }
+      if(continue == "Deselect 'other'"){
+        areas <<- areas[areas != "Other"]
+        new_area <<- NA
+      } 
+      if(continue == "Enter new study areas"){
+        new_area <<- readline("Enter new study areas: ")
+      }
+      
+    }
+    if(is.na(new_area) == F){
+      new_area <<- gsub("; | ;", ";", new_area)
+      new_area <<- data.frame(study_area = strsplit(new_area, ";")[[1]])
+    
+      message("\nSelect country of the new survey areas.\nYou can filter for countries (e.g. typing 'ger' or'ge' for 'Germany') or press 'enter' to see full list.")
+      for(area in new_area$study_area){
+        message(paste0("\nSelect country of the new survey area '", area, "'."))
+        c_filter = readline("Enter filter to restrict search: ")
+        country <<- utils::select.list(countries$country_name_short[grepl(tolower(c_filter), tolower(countries$country_name_short))], title = "Select country", graphics = F)
+        while(country == ""){
+          warning(paste0("\nYou must select a country for the new study '", area, "'!\nDo you want to continue by selecting a country or do you want to exit the process?", immediate. = T))
+          continue = utils::select.list(c("Select country", "Exit"))
+          if(continue == "Select country"){
+            message(paste0("\nSelect country of the new survey area '", area, "'."))
+            c_filter = readline("Enter filter to restrict search: ")
+            country <<- utils::select.list(countries$country_name_short[grepl(tolower(c_filter), tolower(countries$country_name_short))], title = "Select country", graphics=F)
+          } else {
+            message("You decided to leave... Have a nice day!")
+            return(invisible(NULL))
+          }
+        }
+      c_code = countries$country_code_alpha3[countries$country_name_short == country]
+      new_area$country_code_alpha3[new_area$study_area == area] <<- c_code
       }
     }
-    new_area = gsub("; | ;", ";", new_area)
-    new_area = strsplit(new_area, ";")[[1]]
-    
-    areas = areas[areas != "Other"]
-    if(!("nothing new" %in% new_site)){
-      DBI::dbWriteTable(db_con, DBI::Id(schema = "geodata", table = "study_area"), data.frame(study_area = new_site), append = T)
-      areas_db = DBI::dbReadTable(db_con, DBI::Id(schema = "geodata", table = "study_area"))
-      areas = unique(c(areas, new_area))
-    }  
+  areas <<- areas[areas != "Other"] 
+  DBI::dbWriteTable(db_con, DBI::Id(schema = "geodata", table = "study_area"), new_area, append = T)
+  }  
+  
+  message("\nSeletc study areas used for this survey.\nYou can filter for certain areas using parts or first letter of their name.\nWhen using multiple filters, separate them by comma, e.g. 'forest,national,park'.")
+  
+  # query areas from db, filter and select areas
+  areas_db = DBI::dbReadTable(db_con, DBI::Id(schema = "geodata", table = "study_area"))
+  a_filter = readline("Enter filter to restrict search: ")
+  a_filter = gsub(", | ,", ",", a_filter)
+  pattern = paste(trimws(strsplit(a_filter, ",")[[1]]), collapse = "|")
+  areas_f = areas_db[grepl(tolower(pattern), tolower(areas_db$study_area)),]
+  if(nrow(areas_f) == 0){
+    message("There were no existing areas found matching your pattern.\nTo add a new area, chose 'Other'.")
   }
-  area_ids = areas_db$study_area_id[sites_db$study_area %in% sites]
-  rm(c(a_filter, pattern))
+  areas = utils::select.list(c(paste(areas_f$study_area, areas_f$country_code_alpha3, sep = ", "), "Other"), multiple = TRUE, title = "Select study area", graphics=F)
+  
+  while("Other" %in% areas){
+    add_area()
+    # query area IDs from database
+    areas_db = DBI::dbReadTable(db_con, DBI::Id(schema = "geodata", table = "study_area"))
+    areas = unique(c(areas, new_area$study_area))
+  }
+  area_ids = areas_db$study_area_id[areas_db$study_area %in% areas]
+  #rm(c("a_filter", "pattern"))
   
   # survey dates ----
-  start_date = readline("Enter start date in formt '2026-05-31': ")
-  start_date = RHelperEcoDynDB:::.parse_date(start_date)
+  message("\nPlease enter start (and end date) of the survey.\nIf you upload a camtrap table with set-up and retrieval dates, you can also skip this step and retrieve these dates automatically from the file.")
+  skip <- utils::select.list(c("Yes, I'll get start an end dates from file.", "No, I'll enter start (and end date) manually.", "Exit"), title = "Read dates from file?", graphics=F)
+  if(skip == "No, I'll enter start (and end date) manually."){
+    start_date = readline("Enter start date in formt '2026-05-31': ")
+    start_date = RHelperEcoDynDB:::.parse_date(start_date)
   
-  end_date = readline("Enter start date in formt '2026-05-31': ")
-  end_date = RHelperEcoDynDB:::.parse_date(end_date)
+    end_date = readline("Enter end date in formt '2026-05-31': ")
+    end_date = RHelperEcoDynDB:::.parse_date(end_date)
+    }
+  if(skip == "Exit"){
+    # deleting previous entries from DB when exiting
+    message("You decided to leave... Have a nice day!")
+    return(invisible(NULL))
+  }
+  
+  
   
   # survey type ----
   types_db = DBI::dbReadTable(db_con, DBI::Id(schema = "surveydata", table = "types"))
@@ -103,23 +159,30 @@ createCamTrapSurvey = function(proj_name){
     }  
   }
   type_ids = types_db$surveytype_id[types_db$survey_type %in% types]
+  #
   rm(c(t_filter, pattern))
   
   # comment on survey ----
-  comment = readline("Enter any comment on survey: ")
+  message("\nYou can add now any additional comment on the survey")
+  comment = readline("Enter comment: ")
   
+  new_survey = data.frame(area = paste(areas, collapse ="; "), start_date = NA, end_date = NA, comment = comment )
   
-  
-  new_survey = data.frame(area = paste(sites, collapse ="; "), start_date = start_date, end_date = end_date, comment = comment )
-  
-  # read existing camtrap surveys from DB
+  # read existing surveys from DB
   surveys_db = DBI::dbReadTable(db_con, DBI::Id(schema = "surveydata", table = "survey_info"))
   # compare new survey with existing ct-surveys of DB and stop if it already exists
   if(paste(new_survey$start_date, new_survey$area) %in% paste(surveys_db$start_date, surveys_db$area)){
     stop(paste0("\nThe camera trapping survey from '", date, "' for the areas '",paste(sites, collapse ="',' "),"' already exists in the EcoDyn database.\nIn case you disagree please contact the database administrators.\n"))
   }
+  
+  
+  
+     #
+####### 
+     #
+  
   # writing new ct-survey to the camtrapdata.ct_surveys table
-  DBI::dbWriteTable(db_con,  DBI::Id(schema = "surveydata", table = "survey_info"), new_survey, append = T)
+  DBI::dbWriteTable(db_con,  DBI::Id(schema = "surveydata", table = "survey_info"), new_survey[c("start_date", "end_date", "comment")], append = T)
   
   # retrieve survey_id of the new ct-survey from the DB
   surveys_db = DBI::dbReadTable(db_con, DBI::Id(schema = "surveydata", table = "survey_info"))
@@ -314,6 +377,14 @@ createCamTrapSurvey = function(proj_name){
       locale = "C"
     )
   }
+  
+  # retrieve survey start and end date from ct-table and write it to surveydata.survey_info
+  if(skip == "Yes, I'll get start an end dates from file."){
+    start_date = min(set_up_date)
+    end_date = max(retrieval_date)
+    dbExecute(db_con, paste0("UPDATE surveydata.survey_info SET start_date = '", start_date, "', end_date = '", end_date, "' WHERE survey_id = ", survey_id))
+  }
+  
   
   
   

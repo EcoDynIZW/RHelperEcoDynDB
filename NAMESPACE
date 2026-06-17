@@ -2,8 +2,9 @@
 
 export(EcoDynConnect)
 export(EcoDynDisconnect)
-export(createCamTrapData)
+export(createCamTrapSurvey)
 export(createImages)
+export(createPaper)
 export(createPcr)
 export(createPoints)
 export(createProjFolder)

@@ -97,10 +97,10 @@ createProject = function(db_user = NA){
   
   if("Exit" %in% continue | length(continue == 0)){
     message("You decided to leave... Have a nice day!")
-    stop(sprintf("\r%s\r", paste(rep(" ", getOption("width")-1L), collapse=" ")))
+    return(invisible(NULL))
   }
   
   # final message
-  message(paste0("\nYou entered all relevant data. \nYou can add additional project information any time by calling the respective functions\ncreateProjKeywords(proj_name = ", proj_name,"), \ncreateProjPeople(proj_name = ", proj_name,"), \ncreateProjOrg(proj_name = ", proj_name,"))\n\nHave a nice day!"))
+  message(paste0("\nYou entered all relevant data and the project . \nYou can add additional project information any time by calling the respective functions\ncreateProjKeywords(), \ncreateProjPeople(), \ncreateProjOrg())\n\nHave a nice day!"))
   rm(proj_id, proj_name)
 }

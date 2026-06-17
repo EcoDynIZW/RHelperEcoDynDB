@@ -53,6 +53,17 @@
 }
 
 
+# 
+.isEcoDynConnected <- function() {
+  if (exists("db_con") && !is.null(db_con)) {
+    db_con <- get("db_con", envir = .GlobalEnv)
+    return(RPostgres::dbIsValid(db_con))
+  } else {
+    return(FALSE)
+  }
+}
+
+
 # Function to format and run SQL scripts from R. ----
 .readSQL <- function(filepath){
   
@@ -82,7 +93,6 @@
 
 # Function to select one or more EcoDynDB projects. ----
 .selectProject = function(){
-  message("You have to select a project from the EcoDynDB? You can filter the existing projects by one ore more filter options.")
   
   # check for database connection and connect if needed
   if(RHelperEcoDynDB::isEcoDynConnected() == FALSE){
@@ -96,7 +106,7 @@
   # read proj_info table from database
   projects <- DBI::dbReadTable(db_con, DBI::Id(schema = "projects", table = "proj_info"))
   
-  
+  message("You have to select a project from the EcoDynDB? You can filter the existing projects by one ore more filter options.")
   # select filter
   filter <- function(){
     selFilter <- utils::select.list(c("Project name", "Start year or range of years", "Keywords", "Paricipants", "Organisations", "No filter", "Exit"), title = "Please choose from the following filter options:", multiple = T, graphics = FALSE)
