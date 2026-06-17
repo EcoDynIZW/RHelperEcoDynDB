@@ -6,7 +6,7 @@
 #' 
 #' @export
 
-createCamTrapSurvey = function(proj_name){
+createCamTrapData = function(proj_name){
   
   # Step 1, selecting projects ----
   # set project name and ID
