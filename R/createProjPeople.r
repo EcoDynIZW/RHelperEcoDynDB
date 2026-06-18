@@ -6,7 +6,7 @@
 #' 
 #' @export
 
-createProjPeople = function(proj_name){
+createProjPeople = function(){
   
   if(exists("proj_id") == F){
     message("Welcome, you want to link or enter persons to one or more existing projects.\nStep 1: Select project(s):")
@@ -74,7 +74,7 @@ createProjPeople = function(proj_name){
   }
   people_id = people$people_id[paste(people$family_name, people$first_name, sep = ", ") == paste(family_name, first_name, sep = ", ")]
   person = paste(family_name, first_name, sep = ", ")
-  
+  }
   
   
   # person's affiliation----
@@ -211,7 +211,7 @@ createProjPeople = function(proj_name){
   
   sec_person <<- utils::select.list(c("NO", "YES"), title = "Please chose by typing '1' or '2' and press 'Enter':", graphics=F) 
  }
-  }
+
  # run the select_person() function
  add_person()
  
