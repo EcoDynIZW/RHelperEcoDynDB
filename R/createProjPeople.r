@@ -77,6 +77,10 @@ createProjPeople = function(){
   }
   
   
+  # run the select_person() function
+  add_person()
+  
+  
   # person's affiliation----
   if(type == "new project"){
     message("\nStep 3.2: Person's affiliation")} else {
@@ -212,8 +216,6 @@ createProjPeople = function(){
   sec_person <<- utils::select.list(c("NO", "YES"), title = "Please chose by typing '1' or '2' and press 'Enter':", graphics=F) 
  }
 
- # run the select_person() function
- add_person()
  
  # re-run the select_person() function to add more persons
  while(sec_person == "YES"){
