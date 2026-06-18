@@ -211,7 +211,7 @@ createProjPeople = function(proj_name){
   
   sec_person <<- utils::select.list(c("NO", "YES"), title = "Please chose by typing '1' or '2' and press 'Enter':", graphics=F) 
  }
- 
+  }
  # run the select_person() function
  add_person()
  
@@ -226,4 +226,4 @@ createProjPeople = function(proj_name){
      rm(list = ls())
    }
  } 
-  }}
+  }
