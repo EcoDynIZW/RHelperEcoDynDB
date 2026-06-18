@@ -6,9 +6,6 @@ Authors@R: person("Jan", "Axtner", , "axtner@izw-berlin.de", c("aut", "cre"))
 Description: A suite of tools to extract or manipulate data of the EcoDyn database. 
 License: MIT + file LICENSE
 Depends: R (>= 4.1)
-<<<<<<< HEAD
-Imports: DBI, RPostgres, XML, getPass, readxl, pingr
-=======
 Imports: 
   DBI, 
   RPostgres, 
@@ -18,7 +15,6 @@ Imports:
   pingr,
   stats,
   utils
->>>>>>> 3a09b2ff969bd977a8fb6b3bc2f487edac7f8daf
 RoxygenNote: 7.3.3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

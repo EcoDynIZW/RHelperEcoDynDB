@@ -1,10 +1,8 @@
 #' import camera trapping data in the EcoDyn database
-#' 
-#' createCamTrapSurvey 
-#' 
+#' createCamTrapData 
 #' Function to import camera trapping data, including station sites, run times and link them to a project of the EcoDyn database.
-#' 
 #' @export
+#' 
 
 createCamTrapData = function(proj_name){
   
