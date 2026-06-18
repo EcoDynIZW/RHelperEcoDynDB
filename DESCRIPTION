@@ -15,6 +15,6 @@ Imports:
   pingr,
   stats,
   utils
-RoxygenNote: 7.3.3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
+Config/roxygen2/version: 8.0.0
