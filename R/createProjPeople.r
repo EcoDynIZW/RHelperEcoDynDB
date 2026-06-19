@@ -117,8 +117,8 @@ add_person = function(){
     family_name = strsplit(person, ", ")[[1]][1]
     first_name = strsplit(person, ", ")[[1]][2]
   }
-  people_id = people$people_id[paste(people$family_name, people$first_name, sep = ", ") == paste(family_name, first_name, sep = ", ")]
-  person = paste(family_name, first_name, sep = ", ")
+  people_id <<- people$people_id[paste(people$family_name, people$first_name, sep = ", ") == paste(family_name, first_name, sep = ", ")]
+  person <<- paste(family_name, first_name, sep = ", ")
 }
 
 # add affiliation
