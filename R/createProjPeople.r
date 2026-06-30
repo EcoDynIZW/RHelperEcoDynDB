@@ -100,7 +100,7 @@ createProjPeople = function(){
       countries = DBI::dbReadTable(db_con, DBI::Id(schema = "people", table = "countries"))
       # filter those people by part of their country name, e.g. "ge" for "Germany"
       c_filter = readline("To select the country the organisaton is resident, enter part of the country name: ")
-      f_country = countries[grepl(tolower(c_filter), tolower(countries$country)),]
+      f_country = countries[grepl(tolower(c_filter), tolower(countries$country_name_short)),]
       country = utils::select.list(f_country, graphics=F)
       address = readline("Please enter full address: ")
       # check if entered organisation does not exist in database
