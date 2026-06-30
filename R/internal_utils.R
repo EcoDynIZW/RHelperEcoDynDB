@@ -297,10 +297,10 @@
       message("\nAfter filtering the follwoing projects remain:")
       print(f_projects[, !(names(f_projects) == "proj_description")])
       message("\nPlease select project(s) from below's list.")
-      project <<- utils::select.list(sprintf(paste0("%-", name_width, "s %6s %4s"), f_projects$proj_name, f_projects$proj_year, f_projects$proj_id), multiple = T, graphics = F)
+      project_chr <- utils::select.list(sprintf(paste0("%-", name_width, "s %6s %4s"), f_projects$proj_name, f_projects$proj_year, f_projects$proj_id), multiple = T, graphics = F)
       
-      matches <- regexec("^(.*)\\s+(\\d{4})\\s+(\\d+)$", project)
-      parts <- regmatches(project, matches)
+      matches <- regexec("^(.*)\\s+(\\d{4})\\s+(\\d+)$", project_chr)
+      parts <- regmatches(project_chr, matches)
       proj_name  <<- trimws(sapply(parts, `[`, 2))
       proj_year  <<- as.numeric(sapply(parts, `[`, 3))
       proj_id <<- as.numeric(sapply(parts, `[`, 4))
